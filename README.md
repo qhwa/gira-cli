@@ -8,7 +8,7 @@ Add it to `Projectfile`
 
 ```crystal
 deps do
-  github "[your-github-name]/gira-cli"
+  github "qhwa/gira-cli"
 end
 ```
 
