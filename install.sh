@@ -14,7 +14,7 @@ function install(){
 
   if [ -f "$GIRA" ]; then
     echo gira is already installed in this compute!
-    #exit 1
+    exit 1
   fi
 
   echo "installing gira"
