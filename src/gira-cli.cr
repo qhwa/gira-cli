@@ -15,15 +15,21 @@ module Gira::Cli
         exit
       end
 
-      @options = OptionParser.new
-      @verbose = false
+      @options   = OptionParser.new
+      @verbose   = false
+      @gira_args = [] of String
+      @cmd_args  = [] of String
 
       parse_options args
       check_conf
-      system to_cmd(args)
+
+      system to_cmd(@cmd_args)
     end
 
     def parse_options args
+      @gira_args.clear
+      @cmd_args.clear
+
       @options.on("-h", "--help", "help") do
         print_usage
         exit
@@ -38,7 +44,17 @@ module Gira::Cli
         exit
       end
 
-      @options.parse(args)
+      finish = false
+      args.each do |arg|
+        if !finish && arg.starts_with?("-")
+          @gira_args << arg
+        else
+          finish = true
+          @cmd_args << arg
+        end
+      end
+
+      @options.parse(@gira_args)
     end
 
     def print_usage
