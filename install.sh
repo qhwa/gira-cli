@@ -3,7 +3,6 @@ TOKEN=$1
 GIRA_HOME=$HOME/.gira
 BIN_PATH=$GIRA_HOME/bin
 CONF_PATH=$GIRA_HOME/conf
-PROXYCHAINS=$BIN_PATH/proxychains4
 GIRA=$BIN_PATH/gira
 
 function usage(){
@@ -33,8 +32,7 @@ function install(){
   mkdir -p $BIN_PATH $CONF_PATH
   chmod 700 $GIRA_HOME
 
-  wget "https://gira.oss-cn-hangzhou.aliyuncs.com/vendor/proxychains4-$platform.bin" -O $PROXYCHAINS -q
-  chmod a+x $PROXYCHAINS
+  install_proxychains
 
   wget "https://gira.oss-cn-hangzhou.aliyuncs.com/dl/gira-$platform.bin" -O $GIRA -q
   chmod a+x $GIRA
@@ -56,7 +54,13 @@ EOF
 
 function install_proxychains(){
   echo "installing proxychains"
-  type brew > /dev/null 2>&1
+  if type brew > /dev/null 2>&1; then
+    brew install --HEAD proxychains
+  elif type apt-get > /dev/null 2>&1; then
+    sudo sh -c 'apt-get update && apt-get install -y proxychains'
+  else
+    sudo yum install -y proxychains
+  fi
 }
 
 [ -z "$TOKEN" ] && usage

@@ -7,7 +7,6 @@ module Gira::Cli
   class Runner
 
     GIRA_HOME = "~/.gira"
-    PROXYCHAINS = "~/.gira/bin/proxychains4"
     GIRA_HOST = "https://gira.cc"
 
     def initialize(args)
@@ -108,9 +107,18 @@ module Gira::Cli
       end
 
       def to_cmd args
-        arr = [PROXYCHAINS, "-f", proxychains_conf_path]
+        arr = [proxychains_bin, "-f", proxychains_conf_path]
         arr.concat args
         arr.join(" ")
+      end
+
+      def proxychains_bin
+        uname = `uname -a`
+        if uname =~ /Darwin/
+          "proxychains4"
+        else
+          "proxychains"
+        end
       end
 
       def proxychains_conf_path
