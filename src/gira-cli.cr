@@ -47,6 +47,7 @@ module Gira::Cli
       puts "options:"
       puts "  -h --help       print this help"
       puts "  -V --verbose    print debug messages"
+      puts "  -v --version    print version"
     end
 
     def print_version
