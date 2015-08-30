@@ -2,6 +2,7 @@
 TOKEN=$1
 GIRA_HOME=$HOME/.gira
 BIN_PATH=$GIRA_HOME/bin
+CONF_PATH=$GIRA_HOME/conf
 PROXYCHAINS=$BIN_PATH/proxychains4
 GIRA=$BIN_PATH/gira
 
@@ -29,18 +30,18 @@ function install(){
 
   [ "unknown" == $platform ] && { echo "only Mac & Linux are supported yet."; exit 1; }
 
-  mkdir -p $BIN_PATH
+  mkdir -p $BIN_PATH $CONF_PATH
   chmod 700 $GIRA_HOME
 
-  wget "https://girathisisdashassets-pnq-cc.alikunlun.com/vendor/proxychains4-$platform.bin" -O $PROXYCHAINS -q
+  wget "https://gira.oss-cn-hangzhou.aliyuncs.com/vendor/proxychains4-$platform.bin" -O $PROXYCHAINS -q
   chmod a+x $PROXYCHAINS
 
-  wget "https://girathisisdashassets-pnq-cc.alikunlun.com/dl/gira-$platform.bin" -O $GIRA -q
+  wget "https://gira.oss-cn-hangzhou.aliyuncs.com/dl/gira-$platform.bin" -O $GIRA -q
   chmod a+x $GIRA
 
   sudo ln -s $GIRA /usr/local/bin
 
-  echo $TOKEN > $GIRA_HOME/conf/token
+  echo $TOKEN > $CONF_PATH/token
   echo "-> Done!"
 
   cat <<EOF
