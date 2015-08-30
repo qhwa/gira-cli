@@ -1,4 +1,5 @@
 require "http/client"
+require "option_parser"
 require "./gira-cli/*"
 
 module Gira::Cli
@@ -6,13 +7,50 @@ module Gira::Cli
   class Runner
 
     GIRA_HOME = "~/.gira"
+    PROXYCHAINS = "~/.gira/bin/proxychains4"
     GIRA_HOST = "https://gira.cc"
-    #GIRA_HOME = "./template"
-    #GIRA_HOST = "http://127.0.0.1:3000"
 
     def initialize(args)
+      if args.empty?
+        print_usage
+        exit
+      end
+
+      @options = OptionParser.new
+      @verbose = false
+
+      parse_options args
       check_conf
       system to_cmd(args)
+    end
+
+    def parse_options args
+      @options.on("-h", "--help", "help") do
+        print_usage
+        exit
+      end
+
+      @options.on("-V", "--verbose", "verbose") do
+        @verbose = true
+      end
+
+      @options.on("-v", "--version", "version") do
+        print_version
+        exit
+      end
+
+      @options.parse(args)
+    end
+
+    def print_usage
+      puts "Usage: gira [--options] [...]"
+      puts "options:"
+      puts "  -h --help       print this help"
+      puts "  -V --verbose    print debug messages"
+    end
+
+    def print_version
+      puts "gira v#{Gira::Cli::VERSION}"
     end
 
     #protected :check_conf
@@ -31,8 +69,12 @@ module Gira::Cli
       end
 
       def init_confs
-        puts "Initing gira home"
+        puts "Initing gira home" if verbose?
         Dir.mkdir_p cache_dir, 0o700
+      end
+
+      def verbose?
+        @verbose
       end
 
       def caching?
@@ -45,7 +87,7 @@ module Gira::Cli
       end
 
       def setup_proxy_confs
-        puts "Fetching configurations from gira.cc"
+        puts "Fetching configurations from gira.cc" if verbose?
         headers = HTTP::Headers.new
         headers["X-Gira-API-Token"] = File.read(token_cache_path).chomp
         HTTP::Client.get("#{GIRA_HOST}/proxychains.conf", headers) do |res|
@@ -65,7 +107,7 @@ module Gira::Cli
       end
 
       def to_cmd args
-        arr = ["proxychains4", "-f", proxychains_conf_path]
+        arr = [PROXYCHAINS, "-f", proxychains_conf_path]
         arr.concat args
         arr.join(" ")
       end
