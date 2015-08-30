@@ -87,6 +87,8 @@ module Gira::Cli
       end
 
       def setup_proxy_confs
+        Dir.mkdir_p File.dirname(proxychains_conf_path)
+
         puts "Fetching configurations from gira.cc" if verbose?
         headers = HTTP::Headers.new
         headers["X-Gira-API-Token"] = File.read(token_cache_path).chomp
@@ -107,7 +109,7 @@ module Gira::Cli
       end
 
       def to_cmd args
-        arr = [proxychains_bin, "-f", proxychains_conf_path]
+        arr = [proxychains_bin]
         arr.concat args
         arr.join(" ")
       end
@@ -122,7 +124,7 @@ module Gira::Cli
       end
 
       def proxychains_conf_path
-        File.join gira_home, "conf/proxychains.conf"
+        File.expand_path "~/.proxychains/proxychains.conf"
       end
 
   end
